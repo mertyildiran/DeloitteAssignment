@@ -90,13 +90,22 @@ function resultFunction(result) {
 function searchFunction(term) {
 	document.querySelector(".search-loader").classList.add("active");
 	removeButton.classList.remove("active");
-    var s = document.createElement("script");
-    s.src = "http://api.walmartlabs.com/v1/search?query="+term+"&format=json&apiKey=9qphwp7ghaka94guhvvxgxy3&callback=resultFunction";
-    document.body.appendChild(s);
+	removeElementsByClass("wallmart-api")
+  var walmartInject = document.createElement("script");
+	walmartInject.classList.add("wallmart-api");
+  walmartInject.src = "http://api.walmartlabs.com/v1/search?query="+term+"&format=json&apiKey=9qphwp7ghaka94guhvvxgxy3&callback=resultFunction";
+  document.body.appendChild(walmartInject);
 }
 
 /* Reset Autcomplete Info */
 function resetAutcomplete(){
 	removeButton.classList.remove("active");
 	autocomplete.classList.remove("active");
+}
+
+function removeElementsByClass(className){
+  var elements = document.getElementsByClassName(className);
+  while(elements.length > 0){
+    elements[0].parentNode.removeChild(elements[0]);
+  }
 }
