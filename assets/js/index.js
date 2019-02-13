@@ -31,12 +31,12 @@ searchInput.onkeyup = function() {
 			searchFunction(term); // search
 		}, 200 );
 	}
-	else resetAutcomplete();
+	else resetAutocomplete();
 }
 
 /* Reset Search Input */
 removeButton.addEventListener('click', function() {
-	resetAutcomplete();
+	resetAutocomplete();
 	searchInput.value = "";
 });
 
@@ -56,18 +56,29 @@ function resultFunction(result) {
 	document.querySelector(".search-loader").classList.remove("active");
 
 	if ( result.totalResults > 0 ) {
+		var preloadedImagesCounter = 0;
 		var categories = [];
 		result.items.forEach( function(item, index) {
-			var category = {};
-			category.id = item.categoryNode.split('_').slice(-1)[0];
-			category.name = item.categoryPath.split('/').slice(-1)[0];
-			categories.push(category);
+			if ( (item.categoryNode != null) && (item.categoryPath != null) ) {
+				var category = {};
+				category.id = item.categoryNode.split('_').slice(-1)[0];
+				category.name = item.categoryPath.split('/').slice(-1)[0];
+				categories.push(category);
+			}
 
 			if ( index < maxShowItem ) {
 				var image = "<img src='" + item.thumbnailImage + "' alt='Product Name'>";
 				var	name = "<span class='name'>" + item.name + "</span>";
 
 				productList += "<li><a href='" + item.productUrl + "'>" + image + " " + name + "</a></li>";
+				var img = new Image();
+    		img.src = item.thumbnailImage;
+				img.onload = function() {
+					preloadedImagesCounter += 1;
+					if (preloadedImagesCounter >= maxShowItem) {
+						document.querySelector(".autocomplete-product-list .product-list").innerHTML = productList;
+					}
+				}
 			}
 		});
 
@@ -107,7 +118,6 @@ function resultFunction(result) {
 				searchFunction(searchInput.value);
 			});
 		});
-		document.querySelector(".autocomplete-product-list .product-list").innerHTML = productList;
 
 		/* Reset */
 		document.querySelector(".autocomplete-container").classList.remove("hidden");
@@ -132,7 +142,7 @@ function searchFunction(term) {
 }
 
 /* Reset Autcomplete Info */
-function resetAutcomplete(){
+function resetAutocomplete(){
 	removeButton.classList.remove("active");
 	autocomplete.classList.remove("active");
 }
