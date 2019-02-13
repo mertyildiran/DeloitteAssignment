@@ -495,7 +495,6 @@ input {
 
 .main-content .info-line{
 	width:100%;
-	min-width:768px;
 	line-height:30px;
 	color:white;
 	font-size:14px;
@@ -650,4 +649,9 @@ input {
 
 .brand-suggestion {
 	cursor: pointer;
+}
+
+ul.product-list > li > a > img {
+	padding: 5px;
+  background: #fff;
 }
