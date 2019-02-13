@@ -137,7 +137,7 @@ function searchFunction(term) {
 	removeElementsByClass("wallmart-api")
 	var walmartInject = document.createElement("script");
 	walmartInject.classList.add("wallmart-api");
-	walmartInject.src = "http://api.walmartlabs.com/v1/search?query="+term+"&format=json&apiKey=9qphwp7ghaka94guhvvxgxy3&callback=resultFunction&facet=on";
+	walmartInject.src = "https://api.walmartlabs.com/v1/search?query=" + term + "&format=json&apiKey=9qphwp7ghaka94guhvvxgxy3&callback=resultFunction&facet=on";
 	document.body.appendChild(walmartInject);
 }
 
