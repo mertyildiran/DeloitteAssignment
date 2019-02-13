@@ -55,22 +55,30 @@ function resultFunction(result) {
 	document.querySelector(".search-loader").classList.remove("active");
 
 	if(result.totalResults > 0){
-		var resultQuery = result.query,
-			item = result.items;
+		var categories = [];
+		result.items.forEach( function(item, index) {
+			var category = {};
+			category.id = item.categoryNode.split('_').slice(-1)[0];
+			category.name = item.categoryPath.split('/').slice(-1)[0];
+			categories.push(category);
 
-		item.forEach(function(value,index) {
-			if(index < maxShowItem){
-				var image = "<img src='"+value.thumbnailImage+"' alt='Product Name'>",
-					name = "<span class='name'>"+value.name+"</span>"
+			if ( index < maxShowItem ) {
+				var image = "<img src='" + item.thumbnailImage + "' alt='Product Name'>";
+				var	name = "<span class='name'>" + item.name + "</span>";
 
-				categoryList += "<li><a href='#' title=''>"+value.categoryPath+"</a></li>";
-				containsList += "<li><a href='#' title=''>"+value.offerType+"</a></li>";
-				productList += "<li><a href='"+value.productUrl+"'>"+image+" "+name+"</a></li>";
+				containsList += "<li><a href='#' title=''>" + item.offerType + "</a></li>";
+				productList += "<li><a href='" + item.productUrl + "'>" + image + " " + name + "</a></li>";
+			}
+		});
+		categories = removeDuplicates(categories, 'name');
+		categories.forEach( function(category, index) {
+			if ( index < (maxShowItem + 2) ) {
+				categoryList += "<li><a href='https://www.walmart.com/cp/" + category.id + "' title=''>" + category.name + "</a></li>";
 			}
 		});
 
-		document.querySelector(".search-word").textContent = resultQuery;
-		document.querySelector(".result-text em").textContent = resultQuery;
+		document.querySelector(".search-word").textContent = result.query;
+		document.querySelector(".result-text em").textContent = result.query;
 		document.querySelector(".category-link-list").innerHTML = categoryList;
 		document.querySelector(".contains-list").innerHTML = containsList;
 		document.querySelector(".autocomplete-product-list .product-list").innerHTML = productList;
@@ -93,7 +101,7 @@ function searchFunction(term) {
 	removeElementsByClass("wallmart-api")
   var walmartInject = document.createElement("script");
 	walmartInject.classList.add("wallmart-api");
-  walmartInject.src = "http://api.walmartlabs.com/v1/search?query="+term+"&format=json&apiKey=9qphwp7ghaka94guhvvxgxy3&callback=resultFunction";
+  walmartInject.src = "http://api.walmartlabs.com/v1/search?query="+term+"&format=json&apiKey=9qphwp7ghaka94guhvvxgxy3&callback=resultFunction&facet=on";
   document.body.appendChild(walmartInject);
 }
 
@@ -108,4 +116,10 @@ function removeElementsByClass(className){
   while(elements.length > 0){
     elements[0].parentNode.removeChild(elements[0]);
   }
+}
+
+function removeDuplicates(myArr, prop) {
+    return myArr.filter((obj, pos, arr) => {
+        return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
+    });
 }
