@@ -48,7 +48,7 @@ document.getElementById("searchForm").addEventListener('submit',function(e){
 /* Result */
 function resultFunction(result) {
 	var categoryList = "",
-		containsList = "",
+		brandsList = "",
 		productList = "";
 	removeButton.classList.add("active");
 	autocomplete.classList.add("active");
@@ -66,10 +66,10 @@ function resultFunction(result) {
 				var image = "<img src='" + item.thumbnailImage + "' alt='Product Name'>";
 				var	name = "<span class='name'>" + item.name + "</span>";
 
-				containsList += "<li><a href='#' title=''>" + item.offerType + "</a></li>";
 				productList += "<li><a href='" + item.productUrl + "'>" + image + " " + name + "</a></li>";
 			}
 		});
+
 		categories = removeDuplicates(categories, 'name');
 		categories.forEach( function(category, index) {
 			if ( index < (maxShowItem + 2) ) {
@@ -77,10 +77,35 @@ function resultFunction(result) {
 			}
 		});
 
+		var brands = [];
+		result.facets.forEach( function(facet, index) {
+			if (facet.name == "brand") {
+				brands = facet.facetValues;
+			}
+		});
+		brands = brands.sort(compareFacets).reverse();
+		if (brands === undefined || brands.length == 0) {
+			document.querySelector(".brands-list").style.visibility = 'hidden';
+		} else {
+			document.querySelector(".brands-list").style.visibility = 'visible';
+		}
+		brands.forEach( function(brand, index) {
+			if ( index < maxShowItem ) {
+				brandsList += "<li class='brand-suggestion'>" + brand.name + "</li>";
+			}
+		});
+
 		document.querySelector(".search-word").textContent = result.query;
 		document.querySelector(".result-text em").textContent = result.query;
 		document.querySelector(".category-link-list").innerHTML = categoryList;
-		document.querySelector(".contains-list").innerHTML = containsList;
+		document.querySelector(".brands-list").innerHTML = brandsList;
+		[...document.querySelectorAll('.brand-suggestion')].forEach( function(el) {
+			el.addEventListener("click", function(event) {
+	        var targetElement = event.target || event.srcElement;
+					searchInput.value = targetElement.innerHTML;
+					searchFunction(searchInput.value);
+	    });
+		});
 		document.querySelector(".autocomplete-product-list .product-list").innerHTML = productList;
 
 		/* Reset */
@@ -122,4 +147,12 @@ function removeDuplicates(myArr, prop) {
     return myArr.filter((obj, pos, arr) => {
         return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
     });
+}
+
+function compareFacets(a,b) {
+  if (a.count < b.count)
+    return -1;
+  if (a.count > b.count)
+    return 1;
+  return 0;
 }
